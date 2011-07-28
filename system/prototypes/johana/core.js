@@ -110,12 +110,12 @@ var _init = false;
 var _modules = [];
 
 /**
- * @var  Object   Include paths that are used to find files
+ * @var  Array   Include paths that are used to find files
  */
 var _paths = [APPPATH, SYSPATH];
 
 /**
- * @var  Object   File path cache, used when caching is true in [Johana.init]
+ * @var  Array   File path cache, used when caching is true in [Johana.init]
  */
 var _files = [];
 
