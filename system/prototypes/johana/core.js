@@ -30,6 +30,11 @@ JohanaCore.DEVELOPMENT = 4;
 JohanaCore.environment = JohanaCore.DEVELOPMENT;
 
 /**
+ * @var  Boolean  True if Johana is running on windows
+ */
+JohanaCore.isWindows = false;
+
+/**
  * @var  Boolean  Should errors and exceptions be logged
  */
 JohanaCore.logErrors = false;
@@ -77,7 +82,7 @@ JohanaCore.caching = false;
 /**
  * @var  Boolean  Whether to enable [profiling](Johana/profiling). Set by [Johana.init]
  */
-JohanaCore.profiling = true;
+JohanaCore.profiling = false;
 
 /**
  * @var  Boolean  Enable Johana catching and displaying errors. Set by [Johana.init]
@@ -164,16 +169,16 @@ JohanaCore.init = function(settings)
 	if (settings['profile'] !== undefined)
 	{
 		// Enable profiling
-		JohanaCore.profiling = new Bool(settings['profile']);
+		Johana.profiling = settings['profile'];
 	}
 
 	if (settings['errors'] !== undefined)
 	{
 		// Enable error handling
-		JohanaCore.errors = new Bool(settings['errors']);
+		Johana.errors = settings['errors'];
 	}
 
-	if (JohanaCore.errors === true)
+	if (Johana.errors === true)
 	{
 //		// Enable JohanaCore exception handling, adds stack traces and error source.
 //		set_exception_handler(Object('JohanaCore_Exception', 'handler'));
@@ -182,12 +187,15 @@ JohanaCore.init = function(settings)
 //		set_error_handler(Object('JohanaCore', 'error_handler'));
 	}
 
-//	// Enable the JohanaCore shutdown handler, which catches E_FATAL errors.
-//	register_shutdown_function(Object('JohanaCore', 'shutdown_handler'));
-
 	if (settings['expose'] !== undefined)
 	{
-		JohanaCore.expose = new Bool(settings['expose']);
+		Johana.expose = settings['expose'];
+	}
+
+	// Determine if we are running in a Windows environment
+	if (process.platform === 'win32')
+	{
+		Johana.isWindows = true;
 	}
 
 	if (settings['cacheDir'] !== undefined)
@@ -217,60 +225,54 @@ JohanaCore.init = function(settings)
 		}
 
 		// Set the cache directory path
-		JohanaCore.cacheDir = fs.realpathSync(settings['cacheDir']);
+		Johana.cacheDir = fs.realpathSync(settings['cacheDir']);
 	}
 	else
 	{
 		// Use the default cache directory
-		JohanaCore.cacheDir = APPPATH + 'cache';
+		Johana.cacheDir = APPPATH + 'cache';
 	}
 
 	try
 	{
 		// Check if cache dir it writable
-		fs.chmodSync(JohanaCore.cacheDir, 0755);
+		fs.chmodSync(Johana.cacheDir, 0755);
 	}
 	catch (e)
 	{
-		throw new Error('Directory '+JohanaCore.cacheDir+' must be writable');
+		throw new Error('Directory ' + Johana.cacheDir + ' must be writable');
 	}
 
 
 	if (settings['cacheLife'] !== undefined)
 	{
 		// Set the default cache lifetime
-		JohanaCore.cacheLife = settings['cacheLife'];
+		Johana.cacheLife = settings['cacheLife'];
 	}
 
 	if (settings['caching'] !== undefined)
 	{
 		// Enable or disable internal caching
-		JohanaCore.caching = new Bool(settings['caching']);
+		Johana.caching = settings['caching'];
 	}
-
-//	if (JohanaCore.caching === TRUE)
-//	{
-//		// Load the file path cache
-//		_files = JohanaCore::cache('JohanaCore::find_file()');
-//	}
 
 	if (settings['charset'] !== undefined)
 	{
 		// Set the system character set
-		JohanaCore.charset = settings['charset'].toLowerCase();
+		Johana.charset = settings['charset'].toLowerCase();
 	}
 
 	if (settings['baseUrl'] !== undefined)
 	{
 		// Set the base URL
-		JohanaCore.baseUrl = settings['baseUrl'].replace(/\/$/, '') + '/';
+		Johana.baseUrl = settings['baseUrl'].replace(/\/$/, '') + '/';
 	}
 
 //	// Load the logger
-//	JohanaCore.log = Log.instance();
+//	Johana.log = Log.instance();
 //
 //	// Load the config
-//	JohanaCore.config = Config.instance();
+//	Johana.config = Config.instance();
 };
 
 /**
@@ -283,22 +285,13 @@ JohanaCore.init = function(settings)
  */
 JohanaCore.deinit = function()
 {
-	if (JohanaCore._init)
+	if (_init)
 	{
-		if (JohanaCore.errors)
-		{
-//			// Go back to the previous error handler
-//			restore_error_handler();
-//
-//			// Go back to the previous exception handler
-//			restore_exception_handler();
-		}
-
 		// Destroy objects created by init
-		JohanaCore.log = JohanaCore.config = null;
+		Johana.log = Johana.config = null;
 
 		// Reset internal storage
-		_modules = JohanaCore._files = [];
+		_modules = _files = [];
 		_paths   = [APPPATH, SYSPATH];
 
 		// Reset file cache status
@@ -319,7 +312,7 @@ JohanaCore.autoLoad = function(lib)
 {
 	var file = lib.replace(/[A-Z]/g, '/$&').replace(/^\//, '').toLowerCase();
 
-	var path = JohanaCore.findFile('prototypes', file);
+	var path = Johana.findFile('prototypes', file);
 
 	if (path)
 	{
@@ -485,13 +478,13 @@ JohanaCore.findFile = function(dir, file, ext, list)
 	// Create a partial path of the filename
 	var path = dir + '/' + file + ext;
 
-	if (JohanaCore.caching === true && _files[path + (list ? '_list' : '_path')] !== undefined)
+	if (Johana.caching === true && _files[path + (list ? '_list' : '_path')] !== undefined)
 	{
 		// This path has been cached
 		return _files[path + (list ? '_list' : '_path')];
 	}
 
-	if (JohanaCore.profiling === true)
+	if (Johana.profiling === true)
 	{
 		// Start a new benchmark
 		var benchmark = Profiler.start('Johana', 'findFile');
@@ -554,10 +547,10 @@ JohanaCore.findFile = function(dir, file, ext, list)
 		}
 	}
 
-	if (JohanaCore.caching === true)
+	if (Johana.caching === true)
 	{
 		// Add the path to the cache
-		_files[path + (list ? '_list' : '_path')] = $found;
+		_files[path + (list ? '_list' : '_path')] = found;
 
 		// Files have been changed
 		_filesChanged = true;
