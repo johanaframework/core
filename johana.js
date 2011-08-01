@@ -38,3 +38,6 @@ require(SYSPATH + 'prototypes/johana/autoload');
 
 // Bootstrap the application
 require(APPPATH + 'bootstrap');
+
+//console.log(Johana.config('bootstrap'));
+

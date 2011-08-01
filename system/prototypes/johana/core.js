@@ -102,7 +102,7 @@ JohanaCore.log;
 /**
  * @var  Config  config object
  */
-JohanaCore.config;
+JohanaCore._config;
 
 /**
  * @var  Boolean  Has [Johana.init] been called?
@@ -271,8 +271,8 @@ JohanaCore.init = function(settings)
 //	// Load the logger
 //	Johana.log = Log.instance();
 //
-//	// Load the config
-//	Johana.config = Config.instance();
+	// Load the config
+	Johana._config = Config.instance();
 };
 
 /**
@@ -564,5 +564,54 @@ JohanaCore.findFile = function(dir, file, ext, list)
 
 	return found;
 };
+
+/**
+ * Returns the configuration array for the requested group.  See
+ * [configuration files](johana/files/config) for more information.
+ *
+ *     // Get all the configuration in config/database.js
+ *     var config = Johana.config('database');
+ *
+ *     // Get only the default connection configuration
+ *     var default = Johana.config('database.default')
+ *
+ *     // Get only the hostname of the default connection
+ *     var host = Johana.config('database.default.connection.hostname')
+ *
+ * @param   String   group name
+ * @return  Config
+ */
+var _configCache = {};
+
+JohanaCore.config = function(group)
+{
+	var path = false;
+
+	var dot = group.indexOf('.');
+
+	if (dot !== -1)
+	{
+		// Split the config group and path
+		var path = group.substring(dot + 1);
+
+		group = group.substring(0, dot);
+	}
+
+	if (_configCache[group] === undefined)
+	{
+		// Load the config group into the cache
+		_configCache[group] = Johana._config.load(group);
+	}
+
+	if (path !== false)
+	{
+		return Arr.path(_config[group], path, null, '.');
+	}
+	else
+	{
+		return _configCache[group];
+	}
+};
+
 
 module.exports = JohanaCore;
