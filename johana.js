@@ -22,7 +22,6 @@ DOCROOT = require('fs').realpathSync('.') + '/';
  */
 require(SYSPATH + 'prototypes/johana/core');
 
-
 if (require('path').existsSync(APPPATH + 'prototypes/johana.js'))
 {
 	// Application extends the core
@@ -39,5 +38,7 @@ require(SYSPATH + 'prototypes/johana/autoload');
 // Bootstrap the application
 require(APPPATH + 'bootstrap');
 
-//console.log(Johana.config('bootstrap'));
+Johana.conf.attach(new ConfigFile());
+
+console.log(Johana.config('vova'));
 

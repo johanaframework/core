@@ -102,7 +102,7 @@ JohanaCore.log;
 /**
  * @var  Config  config object
  */
-JohanaCore._config;
+JohanaCore.conf;
 
 /**
  * @var  Boolean  Has [Johana.init] been called?
@@ -272,7 +272,7 @@ JohanaCore.init = function(settings)
 //	Johana.log = Log.instance();
 //
 	// Load the config
-	Johana._config = Config.instance();
+	Johana.conf = Config.instance();
 };
 
 /**
@@ -600,7 +600,7 @@ JohanaCore.config = function(group)
 	if (_configCache[group] === undefined)
 	{
 		// Load the config group into the cache
-		_configCache[group] = Johana._config.load(group);
+		_configCache[group] = Johana.conf.load(group);
 	}
 
 	if (path !== false)

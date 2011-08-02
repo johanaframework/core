@@ -79,6 +79,11 @@ JohanaConfig = function()
 	 */
 	this.load = function(group)
 	{
+		if (_readers.length === 0)
+		{
+			throw new Error('No configuration readers attached');
+		}
+
 		for (var reader in _readers)
 		{
 			var config = _readers[reader].load(group);
@@ -90,12 +95,10 @@ JohanaConfig = function()
 			}
 		}
 
-		if (_readers.length === 0)
-		{
-			throw new Error('No configuration readers attached');
-		}
+		// Reset the iterator
+		var config = _readers.slice(0, 1)[0];
 
-		// Load the reader as an empty array
+		// Load the reader as an empty object
 		return config.load(group, {});
 	};
 
