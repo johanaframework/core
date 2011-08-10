@@ -587,14 +587,14 @@ JohanaCore.config = function(group)
 {
 	var path = false;
 
-	var dot = group.indexOf('.');
+	var dotIndex = group.indexOf('.');
 
-	if (dot !== -1)
+	if (dotIndex !== -1)
 	{
 		// Split the config group and path
-		var path = group.substring(dot + 1);
+		var path = group.substring(dotIndex + 1);
 
-		group = group.substring(0, dot);
+		group = group.substring(0, dotIndex);
 	}
 
 	if (_configCache[group] === undefined)

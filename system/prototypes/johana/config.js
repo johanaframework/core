@@ -1,5 +1,5 @@
 /**
- * Wrapper for configuration arrays. Multiple configuration readers can be
+ * Wrapper for configuration objects. Multiple configuration readers can be
  * attached to allow loading configuration from files, database, etc.
  *
  * @package    Johana
@@ -13,113 +13,126 @@ JohanaConfig = function()
 	/**
 	 * @var  Array  Configuration readers
 	 */
-	var _readers = [];
+	this._readers = [];
+};
 
-	/**
-	 * Attach a configuration reader. By default, the reader will be added as
-	 * the first used reader. However, if the reader should be used only when
-	 * all other readers fail, use `false` for the second parameter.
-	 *
-	 *     config.attach(reader);        // Try first
-	 *     config.attach(reader, false); // Try last
-	 *
-	 * @param   Object   ConfigReader instance
-	 * @param   Boolean  add the reader as the first used object
-	 * @return  this
-	 */
-	this.attach = function(reader, first)
+/**
+ * Attach a configuration reader. By default, the reader will be added as
+ * the first used reader. However, if the reader should be used only when
+ * all other readers fail, use `false` for the second parameter.
+ *
+ *     config.attach(reader);        // Try first
+ *     config.attach(reader, false); // Try last
+ *
+ * @param   Object   ConfigReader instance
+ * @param   Boolean  add the reader as the first used object
+ * @return  this
+ */
+JohanaConfig.prototype.attach = function(reader, first)
+{
+	if (first === true)
 	{
-		first = first || true;
-
-		if (first === true)
-		{
-			// Place the log reader at the top of the stack
-			_readers.unshift(reader);
-		}
-		else
-		{
-			// Place the reader at the bottom of the stack
-			_readers.push(reader);
-		}
-
-		return this;
-	};
-
-	/**
-	 * Detach a configuration reader.
-	 *
-	 *     config.detach(reader);
-	 *
-	 * @param   Object  ConfigReader instance
-	 * @return  this
-	 */
-	this.detach = function(reader)
+		// Place the config reader at the top of the stack
+		this._readers.unshift(reader);
+	}
+	else
 	{
-		var key = _readers.indexOf(reader);
+		// Place the reader at the bottom of the stack
+		this._readers.push(reader);
+	}
 
-		if (key !== -1)
-		{
-			// Remove the writer
-			delete _readers[key];
-		}
+	return this;
+};
 
-		return this;
-	};
+/**
+ * Detach a configuration reader.
+ *
+ *     config.detach(reader);
+ *
+ * @param   Object  ConfigReader instance
+ * @return  this
+ */
+JohanaConfig.prototype.detach = function(reader)
+{
+	var key = this._readers.indexOf(reader);
 
-	/**
-	 * Load a configuration group. Searches the readers in order until the
-	 * group is found. If the group does not exist, an empty configuration
-	 * array will be loaded using the first reader.
-	 *
-	 *     array = config.load(name);
-	 *
-	 * @param   String  configuration group name
-	 * @return  ConfigReader
-	 * @throws  Error
-	 */
-	this.load = function(group)
+	if (key !== -1)
 	{
-		if (_readers.length === 0)
-		{
-			throw new Error('No configuration readers attached');
-		}
+		// Remove the reader
+		this._readers.splice(key, 1);
+	}
 
-		for (var reader in _readers)
-		{
-			var config = _readers[reader].load(group);
+	return this;
+};
 
-			if (config)
-			{
-				// Found a reader for this configuration group
-				return config;
-			}
-		}
-
-		// Reset the iterator
-		var config = _readers.slice(0, 1)[0];
-
-		// Load the reader as an empty object
-		return config.load(group, {});
-	};
-
-	/**
-	 * Copy one configuration group to all of the other readers.
-	 * 
-	 *     config.copy(name);
-	 *
-	 * @param   String   configuration group name
-	 * @return  this
-	 */
-	this.copy = function(group)
+/**
+ * Load a configuration group. Searches the readers in order until the
+ * group is found. If the group does not exist, an empty configuration
+ * array will be loaded using the first reader.
+ *
+ *     array = config.load(name);
+ *
+ * @param   String  configuration group name
+ * @return  ConfigReader
+ * @throws  Error
+ */
+JohanaConfig.prototype.load = function(group)
+{
+	if (this._readers.length === 0)
 	{
-		// Load the configuration group
-		var config = this.load(group);
+		throw new Error('No configuration readers attached');
+	}
 
-		// TODO:
+	for (var reader in this._readers)
+	{
+		var config = this._readers[reader].load(group);
 
-		return this;
-	};
+		if (config)
+		{
+			// Found a reader for this configuration group
+			return config;
+		}
+	}
 
+	// Reset the iterator
+	var config = this._readers.slice(0, 1)[0];
+
+	// Load the reader as an empty object
+	return config.load(group, {});
+};
+
+/**
+ * Copy one configuration group to all of the other readers.
+ * 
+ *     config.copy(name);
+ *
+ * @param   String   configuration group name
+ * @return  this
+ */
+JohanaConfig.prototype.copy = function(group)
+{
+	// Load the configuration group
+	var config = this.load(group);
+
+	for (var reader in this._readers)
+	{
+		if (config instanceof this._readers[reader].constructor)
+		{
+			// Do not copy the config to the same group
+			continue;
+		}
+
+		// Load the configuration object
+		var object = this._readers[reader].load(group, {});
+
+		for (var key in config)
+		{
+			// Copy each value in the config
+			object.set(key, config[key]);
+		}
+	}
+
+	return this;
 };
 
 /**
@@ -130,7 +143,7 @@ var _instance = null;
 /**
  * Get the singleton instance of Config.
  *
- *     config = Config.instance();
+ *     var config = Config.instance();
  *
  * @return  Config
  */
@@ -145,4 +158,4 @@ JohanaConfig.instance = function()
 	return _instance;
 };
 
-module.exports = JohanaConfig;
+module.exports = JohanaConfig; // End
