@@ -202,7 +202,7 @@ JohanaCore.init = function(settings)
 	{
 		try
 		{
-			var cacheDirExists = fs.statSync(settings['cacheDir']).isDirectory();
+			var cacheDirExists = require('fs').statSync(settings['cacheDir']).isDirectory();
 		}
 		catch (e)
 		{
@@ -215,7 +215,7 @@ JohanaCore.init = function(settings)
 			try
 			{
 				// Create the cache directory
-				fs.mkdirSync(settings['cacheDir'], 0755);
+				require('fs').mkdirSync(settings['cacheDir'], 0755);
 			}
 			catch (e)
 			{
@@ -225,7 +225,7 @@ JohanaCore.init = function(settings)
 		}
 
 		// Set the cache directory path
-		Johana.cacheDir = fs.realpathSync(settings['cacheDir']);
+		Johana.cacheDir = require('fs').realpathSync(settings['cacheDir']);
 	}
 	else
 	{
@@ -236,7 +236,7 @@ JohanaCore.init = function(settings)
 	try
 	{
 		// Check if cache dir it writable
-		fs.chmodSync(Johana.cacheDir, 0755);
+		require('fs').chmodSync(Johana.cacheDir, 0755);
 	}
 	catch (e)
 	{
@@ -305,7 +305,7 @@ JohanaCore.deinit = function()
 /**
  * Provides auto-loading support of base objects
  *
- * @param   String   class name
+ * @param   String   prototype name
  * @return  Boolean
  */
 JohanaCore.autoLoad = function(lib)
@@ -313,6 +313,12 @@ JohanaCore.autoLoad = function(lib)
 	var file = lib.replace(/[A-Z]/g, '/$&').replace(/^\//, '').toLowerCase();
 
 	var path = Johana.findFile('prototypes', file);
+
+	if (global[lib] !== undefined)
+	{
+		// Object was loaded before
+		return true;
+	}
 
 	if (path)
 	{
@@ -361,7 +367,7 @@ JohanaCore.modules = function(modules)
 		try
 		{
 			// Check if module is valid
-			var module = fs.statSync(modules[name]);
+			var module = require('fs').statSync(modules[name]);
 		}
 		catch (e)
 		{
@@ -371,7 +377,7 @@ JohanaCore.modules = function(modules)
 		if (module && module.isDirectory())
 		{
 			// Add the module to include paths
-			modules[name] = fs.realpathSync(modules[name]) + '/';
+			modules[name] = require('fs').realpathSync(modules[name]) + '/';
 
 			paths.push(modules[name]);
 		}
@@ -398,7 +404,7 @@ JohanaCore.modules = function(modules)
 		try
 		{
 			// Check if exists initialization file
-			var init = fs.statSync(file);
+			var init = require('fs').statSync(file);
 		}
 		catch (e)
 		{
@@ -410,6 +416,9 @@ JohanaCore.modules = function(modules)
 			// Include the module initialization file once
 			require(file);
 		}
+
+		// load module prototypes
+		Autoload.init(_modules[path] + 'prototypes');
 	}
 
 	return _modules;
@@ -507,7 +516,7 @@ JohanaCore.findFile = function(dir, file, ext, list)
 			try
 			{
 				// check if file exists
-				var file = fs.statSync(paths[dir] + path);
+				var file = require('fs').statSync(paths[dir] + path);
 			}
 			catch (e)
 			{
@@ -531,7 +540,7 @@ JohanaCore.findFile = function(dir, file, ext, list)
 			try
 			{
 				// check if file exists
-				var file = fs.statSync(_paths[dir] + path);
+				var file = require('fs').statSync(_paths[dir] + path);
 			}
 			catch (e)
 			{
@@ -577,6 +586,7 @@ JohanaCore.findFile = function(dir, file, ext, list)
  *
  *     // Get only the hostname of the default connection
  *     var host = Johana.config('database.default.connection.hostname')
+ *     var host = Johana.config('database').default.connection.hostname
  *
  * @param   String   group name
  * @return  Config
@@ -587,14 +597,14 @@ JohanaCore.config = function(group)
 {
 	var path = false;
 
-	var dotIndex = group.indexOf('.');
+	var dot = group.indexOf('.');
 
-	if (dotIndex !== -1)
+	if (dot !== -1)
 	{
 		// Split the config group and path
-		var path = group.substring(dotIndex + 1);
+		var path = group.substring(dot + 1);
 
-		group = group.substring(0, dotIndex);
+		group = group.substring(0, dot);
 	}
 
 	if (_configCache[group] === undefined)

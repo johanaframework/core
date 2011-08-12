@@ -15,10 +15,13 @@ MODPATH = require('fs').realpathSync('./modules') + '/';
  */
 SYSPATH = require('fs').realpathSync('./system') + '/';
 
+/**
+ * Set the full path to the docroot
+ */
 DOCROOT = require('fs').realpathSync('.') + '/';
 
 /**
- * Load the core Johana class
+ * Load the Johana core
  */
 require(SYSPATH + 'prototypes/johana/core');
 
@@ -33,9 +36,10 @@ else
 	require(SYSPATH + 'prototypes/johana');
 }
 
-require(SYSPATH + 'prototypes/johana/autoload');
+// Load prototypes
+require(SYSPATH + 'prototypes/autoload');
 
 // Bootstrap the application
 require(APPPATH + 'bootstrap');
 
-Johana.conf.attach(new ConfigFile());
+console.log(Johana.config('vova').lname);
