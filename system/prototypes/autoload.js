@@ -67,11 +67,9 @@ Autoload.list = function (root, prefix)
 };
 
 /**
- * Get list of Protorypes in folder (recursive)
+ * Load all prototypes in folder
  * 
- * @param  String  directory for lookup 
- * @param  String  prefix to prototype name if file is not in root dir
- * @return Array   list of prototypes names
+ * @param  String  root prototype directory for lookup 
  */
 Autoload.init = function (path)
 {
