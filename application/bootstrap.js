@@ -9,3 +9,4 @@ Johana.init({
 });
 
 Johana.conf.attach(new ConfigFile());
+

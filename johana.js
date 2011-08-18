@@ -42,4 +42,9 @@ require(SYSPATH + 'prototypes/autoload');
 // Bootstrap the application
 require(APPPATH + 'bootstrap');
 
-console.log(Url.title('My Blog Post'));
+var view = new View('hello');
+var q = {name: 'test1'};
+//View.setGlobal(q);
+view.set('name', '123');
+//view.
+console.log(view.render());
