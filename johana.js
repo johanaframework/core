@@ -42,4 +42,4 @@ require(SYSPATH + 'prototypes/autoload');
 // Bootstrap the application
 require(APPPATH + 'bootstrap');
 
-console.log(Johana.config('vova').lname);
+console.log(Url.title('My Blog Post'));
