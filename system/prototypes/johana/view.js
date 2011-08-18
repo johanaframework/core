@@ -77,7 +77,7 @@ JohanaView.prototype.setFilename = function(file)
  *
  * You can also use an array to set several values at once:
  *
- *     // Create the values $food and $beverage in the view
+ *     // Create the values food and beverage in the view
  *     view.set({food: 'bread', beverage: 'water'});
  *
  * @param   String   variable name or an array of variables

@@ -18,13 +18,17 @@ JohanaArr = function()
  * @param   Object  object to merge
  * @return  Object
  */
-JohanaArr.merge = function(destination, source){
-   for (var property in source) {
-        if (source.hasOwnProperty(property)) {
-            destination[property] = source[property];
-        }
-    }
-   return destination;
+JohanaArr.merge = function(destination, source)
+{
+	for (var property in source)
+	{
+		if (source.hasOwnProperty(property))
+		{
+			destination[property] = source[property];
+		}
+	}
+
+	return destination;
 };
 
 module.exports = JohanaArr; // End
