@@ -42,9 +42,4 @@ require(SYSPATH + 'prototypes/autoload');
 // Bootstrap the application
 require(APPPATH + 'bootstrap');
 
-var view = new View('hello');
-var q = {name: 'test1'};
-//View.setGlobal(q);
-view.set('name', '123');
-//view.
-console.log(view.render());
+console.log(Johana.config('vova.name'));

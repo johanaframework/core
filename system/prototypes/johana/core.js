@@ -125,9 +125,9 @@ var _paths = [APPPATH, SYSPATH];
 var _files = [];
 
 /**
- * @var  Boolean  Has the file path cache changed during this execution?  Used internally when when caching is true in [Johana.init]
+ * @var  Object config cache
  */
-var _filesChanged = false;
+var _config = {};
 
 
 /**
@@ -294,10 +294,7 @@ JohanaCore.deinit = function()
 		_modules = _files = [];
 		_paths   = [APPPATH, SYSPATH];
 
-		// Reset file cache status
-		_filesChanged = false;
-
-		// Kohana is no longer initialized
+		// Johana is no longer initialized
 		_init = false;
 	}
 };
@@ -344,7 +341,7 @@ JohanaCore.autoLoad = function(lib)
  * Changes the currently enabled modules. Module paths may be relative
  * or absolute, but must point to a directory:
  *
- *     Kohana.modules({'modules/foo': MODPATH+'bar'});
+ *     Johana.modules({'modules/foo': MODPATH+'bar'});
  *
  * @param   Object  list of module paths
  * @return  Object  enabled modules
@@ -561,8 +558,6 @@ JohanaCore.findFile = function(dir, file, ext, list)
 		// Add the path to the cache
 		_files[path + (list ? '_list' : '_path')] = found;
 
-		// Files have been changed
-		_filesChanged = true;
 	}
 
 	if (benchmark)
@@ -591,8 +586,6 @@ JohanaCore.findFile = function(dir, file, ext, list)
  * @param   String   group name
  * @return  Config
  */
-var _configCache = {};
-
 JohanaCore.config = function(group)
 {
 	var path = false;
@@ -607,10 +600,10 @@ JohanaCore.config = function(group)
 		group = group.substring(0, dot);
 	}
 
-	if (_configCache[group] === undefined)
+	if (_config[group] === undefined)
 	{
 		// Load the config group into the cache
-		_configCache[group] = Johana.conf.load(group);
+		_config[group] = Johana.conf.load(group);
 	}
 
 	if (path !== false)
@@ -619,7 +612,7 @@ JohanaCore.config = function(group)
 	}
 	else
 	{
-		return _configCache[group];
+		return _config[group];
 	}
 };
 
