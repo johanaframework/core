@@ -41,5 +41,3 @@ require(SYSPATH + 'prototypes/autoload');
 
 // Bootstrap the application
 require(APPPATH + 'bootstrap');
-
-console.log(Johana.config('vova.name'));

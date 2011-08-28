@@ -159,4 +159,42 @@ JohanaArr.merge = function(destination, source)
 	return destination;
 };
 
+/**
+ * Retrieve a single key from an object. If the key does not exist in the
+ * object, the default value will be returned instead.
+ *
+ *     // Get the value "username" from POST, if it exists
+ *     var username = Arr.get(POST, 'username');
+ *
+ *     // Get the value "sorting" from GET, if it exists
+ *     var sorting = Arr.get(GET, 'sorting');
+ *
+ * @param   Object  object to extract from
+ * @param   String  key name
+ * @param   Mixed   default value
+ * @return  Mixed
+ */
+JohanaArr.get = function(obj, key, def)
+{
+	def = def || null;
+
+	return (obj[key] === undefined) ? def : obj[key];
+};
+
+/**
+ * Check if object is empty
+ *
+ * @param   Object  object to check
+ * @return  Boolean
+ */
+JohanaArr.isEmpty = function(source)
+{
+    for (var prop in source)
+    {
+        if (source.hasOwnProperty(prop)) return false;
+    }
+
+    return true;
+};
+
 module.exports = JohanaArr; // End
