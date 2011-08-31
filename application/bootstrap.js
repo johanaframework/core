@@ -10,10 +10,22 @@ Johana.init({
 
 Johana.conf.attach(new ConfigFile());
 
-require('http').createServer(function (req, res) {
+function testList(req, res) {
+	console.log(Request.factory(req.url, req));
 	console.log(req.url);
-	res.writeHead(200, {'Content-Type': 'text/plain'});
-	res.end('Hello World\n');
-}).listen(1337, "127.0.0.1");
+	res.writeHead(200, {'Content-Type': 'text/html'});
+	res.end(View.factory('hello').render());
+};
 
-console.log('Server running at http://127.0.0.1:1337/');
+require('http').createServer(function (req, res) {
+	testList(req, res);
+}).listen(8001, "127.0.0.1");
+
+var options = {
+  key: require('fs').readFileSync(DOCROOT + '/certs/server.key'),
+  cert: require('fs').readFileSync(DOCROOT + '/certs/server.crt')
+};
+
+require('https').createServer(options, function (req, res) {
+	testList(req, res);
+}).listen(8002);
