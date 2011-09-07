@@ -11,6 +11,7 @@ Johana.init({
 Johana.conf.attach(new ConfigFile());
 
 function testList(req, res) {
+	
 	console.log(Request.factory(req.url, req));
 	console.log(req.url);
 	res.writeHead(200, {'Content-Type': 'text/html'});
