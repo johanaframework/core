@@ -10,6 +10,9 @@ Johana.init({
 
 Johana.conf.attach(new ConfigFile());
 
+
+
+
 function testList(req, res) {
 	
 	console.log(Request.factory(req.url, req));
