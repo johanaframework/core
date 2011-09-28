@@ -796,14 +796,14 @@ JohanaRequest.prototype.param = function(key, def)
  * @return  this
  * @uses    Request.messages
  * @deprecated This should not be here, it belongs in\n
- * Response::send_headers() where it is implemented correctly.
+ * Response.sendHeaders() where it is implemented correctly.
  */
-JohanaRequest.prototype.send_headers = function()
+JohanaRequest.prototype.sendHeaders = function()
 {
 	if ( ! (response = this.response()) instanceof Response)
 		return this;
 
-	response.send_headers();
+	response.sendHeaders();
 	return this;
 };
 

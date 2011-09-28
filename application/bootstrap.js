@@ -25,11 +25,11 @@ require('http').createServer(function (req, res) {
 	testList(req, res);
 }).listen(8001, "127.0.0.1");
 
-var options = {
-  key: require('fs').readFileSync(DOCROOT + '/certs/server.key'),
-  cert: require('fs').readFileSync(DOCROOT + '/certs/server.crt')
-};
- 
-require('https').createServer(options, function (req, res) {
-	testList(req, res);
-}).listen(8002);
+//var options = {
+//  key: require('fs').readFileSync(DOCROOT + '/certs/server.key'),
+//  cert: require('fs').readFileSync(DOCROOT + '/certs/server.crt')
+//};
+// 
+//require('https').createServer(options, function (req, res) {
+//	testList(req, res);
+//}).listen(8002);
