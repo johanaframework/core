@@ -29,7 +29,7 @@ var options = {
   key: require('fs').readFileSync(DOCROOT + '/certs/server.key'),
   cert: require('fs').readFileSync(DOCROOT + '/certs/server.crt')
 };
-
+ 
 require('https').createServer(options, function (req, res) {
 	testList(req, res);
 }).listen(8002);
