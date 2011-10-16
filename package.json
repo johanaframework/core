@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "author": "Johana Team <johanaframework@gmail.com>",
   "contributors": [ 
-    { "name": "Vova Zolotoy", "email": "vovazolotoy@gmail.com" }, 
+    { "name": "Vova Zolotoy", "email": "vovazolotoy@gmail.com" }
   ],
   "keywords": ["framework", "api", "web"],
   "repository": "git://github.com/johanaframework/core"
