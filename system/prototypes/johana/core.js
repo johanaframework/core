@@ -178,15 +178,6 @@ JohanaCore.init = function(settings)
 		Johana.errors = settings['errors'];
 	}
 
-	if (Johana.errors === true)
-	{
-//		// Enable JohanaCore exception handling, adds stack traces and error source.
-//		set_exception_handler(Object('JohanaCore_Exception', 'handler'));
-//
-//		// Enable JohanaCore error handling, converts all PHP errors to exceptions.
-//		set_error_handler(Object('JohanaCore', 'error_handler'));
-	}
-
 	if (settings['expose'] !== undefined)
 	{
 		Johana.expose = settings['expose'];
@@ -268,9 +259,9 @@ JohanaCore.init = function(settings)
 		Johana.baseUrl = settings['baseUrl'].replace(/\/$/, '') + '/';
 	}
 
-//	// Load the logger
-//	Johana.log = Log.instance();
-//
+	// Load the logger
+	Johana.log = Log.instance();
+
 	// Load the config
 	Johana.conf = Config.instance();
 };
