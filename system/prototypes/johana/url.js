@@ -138,4 +138,19 @@ JohanaUrl.title = function(title, separator)
 	return title.replace(new RegExp('^' + sep), '').replace(new RegExp(sep+'$'), '');
 };
 
+
+/**
+ * Convert a phrase to a URL-safe title.
+ *
+ *     console.log(URL.title('My Blog Post')); // "my-blog-post"
+ *
+ * @param   String   title       Phrase to convert
+ * @param   String   separator   Word separator (any single character)
+ * @return  String
+ */
+JohanaUrl.current = function()
+{
+	return Request_initial;
+};
+
 module.exports = JohanaUrl; // End

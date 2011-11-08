@@ -264,6 +264,33 @@ JohanaCore.init = function(settings)
 
 	// Load the config
 	Johana.conf = Config.instance();
+
+	// Setup http server
+	var listen = 80; var host = "localhost";
+
+	if (settings['http'] !== undefined && settings['http']['listen'] !== undefined)
+	{
+		listen = settings['http']['listen'];
+	}
+	if (settings['http'] !== undefined && settings['http']['host'] !== undefined)
+	{
+		host = settings['http']['host'];
+	}
+
+	require('http').createServer(function(request, response) {
+		Johana.onRequest(request, response); 
+	}).listen(listen, host);
+
+	if (settings['https'])
+	{
+		var httpsOptions = {
+		  key: require('fs').readFileSync(settings['https']['key']),
+		  cert: require('fs').readFileSync(settings['https']['cert'])
+		};
+		require('https').createServer(httpsOptions, function(request, response) {
+			Johana.onRequest(request, response); 
+		}).listen(settings['https']['listen'], settings['https']['host']);
+	}
 };
 
 /**
@@ -607,5 +634,27 @@ JohanaCore.config = function(group)
 	}
 };
 
+/**
+ * Returns the configuration array for the requested group.  See
+ * [configuration files](johana/files/config) for more information.
+ *
+ *     // Get all the configuration in config/database.js
+ *     var config = Johana.config('database');
+ *
+ *     // Get only the default connection configuration
+ *     var default = Johana.config('database.default')
+ *
+ *     // Get only the hostname of the default connection
+ *     var host = Johana.config('database.default.connection.hostname')
+ *     var host = Johana.config('database').default.connection.hostname
+ *
+ * @param   String   group name
+ * @return  Config
+ */
+JohanaCore.onRequest = function(request, response)
+{
+	response.writeHead(200, {'Content-Type': 'text/html'});
+	response.end(View.factory('system/onrequest').render());
+};
 
 module.exports = JohanaCore;

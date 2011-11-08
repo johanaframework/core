@@ -23,11 +23,6 @@ JohanaLog.DEBUG     = 7;
 JohanaLog.STRACE    = 8;
 
 /**
- * @var  Boolean  immediately write when logs are added
- */
-JohanaLog.writeOnAdd = true;
-
-/**
  * @var  Log  Singleton instance container
  */
 JohanaLog._instance = null;
@@ -45,9 +40,6 @@ JohanaLog.instance = function()
 	{
 		// Create a new instance
 		Log._instance = new Log();
-
-		// Write the logs at shutdown
-		//register_shutdown_function(array(Log::$_instance, 'write'));
 	}
 
 	return Log._instance;
@@ -149,11 +141,8 @@ JohanaLog.prototype.add = function(level, message, values)
 		body: message
 	});
 
-	if (Log.writeOnAdd)
-	{
-		// Write logs as they are added
-		this.write();
-	}
+	// Write logs as they are added
+	this.write();
 
 	return this;
 };

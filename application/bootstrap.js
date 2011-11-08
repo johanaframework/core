@@ -1,40 +1,51 @@
 
+/**
+ * Enable modules. Modules are referenced by a relative or absolute path.
+ */
 Johana.modules({
 	cache: MODPATH + 'cache'
 });
 
+/**
+ * Initialize Johana, setting the default options.
+ *
+ * The following options are available:
+ *
+ * - string   baseUrl     path, and optionally domain, of your application   NULL
+ * - boolean  errors      enable or disable error handling                   TRUE
+ * - boolean  profile     enable or disable internal profiling               TRUE
+ * - boolean  caching     enable or disable internal caching                 FALSE
+ */
 Johana.init({
 	baseUrl: 'http://johana.site',
-	profile: false
+	profile: false,
+	http: {
+		host: "localhost",
+		listen: 8001
+	}
+//	https: {
+//		key: DOCROOT + '/certs/server.key',
+//		cert: DOCROOT + '/certs/server.crt',
+//		listen: 8001
+//	}
 });
 
 /**
  * Attach the file write to logging. Multiple writers are supported.
  */
 Johana.log.attach(new LogFile(APPPATH + 'logs'), Log.ERROR);
-
 Johana.log.attach(new LogConsole());
 
+/**
+ * Attach a file reader to config. Multiple readers are supported.
+ */
 Johana.conf.attach(new ConfigFile());
 
-function testList(req, res) {
-	Johana.log.add(Log.DEBUG, 'Request: ' + req.url);
-	Johana.log.add(Log.ERROR, 'ERRO Request: ' + req.url);
+Johana.onRequest = function(req, res) {
 
-	//console.log(Request.factory(req.url, req));
+	Request.factory(req.url, req);
+	Johana.log.add(Log.ERROR, 'vova');
+
 	res.writeHead(200, {'Content-Type': 'text/html'});
 	res.end(View.factory('hello').render());
 };
-
-require('http').createServer(function (req, res) {
-	testList(req, res);
-}).listen(8001, "127.0.0.1");
-
-//var options = {
-//  key: require('fs').readFileSync(DOCROOT + '/certs/server.key'),
-//  cert: require('fs').readFileSync(DOCROOT + '/certs/server.crt')
-//};
-// 
-//require('https').createServer(options, function (req, res) {
-//	testList(req, res);
-//}).listen(8002);

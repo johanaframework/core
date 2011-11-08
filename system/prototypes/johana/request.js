@@ -22,6 +22,11 @@ JohanaRequest.userAgent = '';
 JohanaRequest.clientIp = '0.0.0.0';
 
 /**
+ * @var  string  trusted proxy server IPs
+ */
+JohanaRequest.trustedProxies = ['127.0.0.1', 'localhost', 'localhost.localdomain'];
+
+/**
  * @var  Request  main request instance
  */
 JohanaRequest.initial;
@@ -50,7 +55,7 @@ JohanaRequest.factory = function(uri, req)
 	var protocol, method, referrer, userAgent, clientIp, requestedWith, body = '';
 
 	// If this is the initial request
-	if (1)// ! Request.initial)
+	if ( 1 )
 	{
 		if (req.method)
 		{

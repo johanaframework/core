@@ -7,7 +7,10 @@
  * @copyright  (c) 2011 Johana Team
  * @license    http://johanaframework.org/license
  */
-JohanaLogWriter = function() {};
+JohanaLogWriter = function() {
+
+	this.id = Math.random();
+};
 
 /**
  * Numeric log level to string lookup table.
@@ -34,7 +37,7 @@ JohanaLogWriter.prototype._logLevels = {
  */
 JohanaLogWriter.prototype.toString = function()
 {
-	return JSON.stringify(this);
+	return this.id.toString();
 };
 
 exports = module.exports = JohanaLogWriter; // End
