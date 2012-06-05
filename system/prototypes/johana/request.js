@@ -48,137 +48,141 @@ JohanaRequest.current;
  * @uses    Route.all
  * @uses    Route.matches
  */
-JohanaRequest.factory = function(uri, req)
+JohanaRequest.factory = function(uri, request)
 {
-	uri = uri || true; req = req || false;
+	if (uri == undefined)
+	{
+		uri = true;
+	}
+	request = request || false;
 
-	var protocol, method, referrer, userAgent, clientIp, requestedWith, body = '';
+	var protocol, secure, method, referrer, userAgent, clientIp, requestedWith, body = '';
 
 	// If this is the initial request
-	if ( 1 )
+	if (uri === true)
 	{
-		if (req.method)
+		if (request.connection.encrypted !== undefined)
+		{
+			// This request is secure
+			secure = true;
+			protocol = 'HTTPS/' + request.httpVersion;
+		}
+		else
+		{
+			protocol = 'HTTP/' + request.httpVersion;
+		}
+
+		if (request.method)
 		{
 			// Use the server request method
-			method = req.method;
+			method = request.method;
 		}
 		else
 		{
 			// Default to GET requests
-			method = HttpRequest.GET;
+			method = HttpRequest.GET; // TODO:
 		}
 
-		if (req.connection.encrypted !== undefined)
-		{
-			// This request is secure
-			protocol = 'https';
-		}
-		else
-		{
-			protocol = 'http';
-		}
-
-		if (req.headers['referer'] !== undefined)
+		if (request.headers['referer'] !== undefined)
 		{
 			// There is a referrer for this request
-			referrer = req.headers['referer'];
+			referrer = request.headers['referer'];
 		}
 
-		if (req.connection.socket !== undefined)
+		if (request.connection.socket !== undefined)
 		{
 			// Client ip
-			clientIp = req.connection.socket.remoteAddress;
+			clientIp = request.connection.socket.remoteAddress;
 		}
-		else if (req.connection.remoteAddress)
+		else if (request.connection.remoteAddress)
 		{
 			// Client ip
-			clientIp = req.connection.remoteAddress;
+			clientIp = request.connection.remoteAddress;
 		}
 
-		if (req.headers['user-agent'] !== undefined)
+		if (request.headers['user-agent'] !== undefined)
 		{
 			// Browser type
-			userAgent = req.headers['user-agent'];
+			userAgent = request.headers['user-agent'];
 		}
 
-		if (req.headers['x-requested-with'] !== undefined)
+		if (request.headers['x-requested-with'] !== undefined)
 		{
 			// Typically used to denote AJAX requests
-			requestedWith = req.headers['x-requested-with'];
+			requestedWith = request.headers['x-requested-with'];
 		}
 
 		if (method !== 'GET')
 		{
 			// Ensure the raw body is saved for future use
-			req.on('data', function(data) {
+			request.on('data', function(data) {
 				body += data;
 			});
 
-			req.on('end', function(){
+			request.on('end', function(){
 				// Set the request body (probably a PUT type)
-				request.body(require('querystring').parse(body));
-				console.log(require('querystring').parse(body));
+				instance.post(require('querystring').parse(body));
 			});
 		}
 
-//		if (uri === true)
-//		{
-//			// Attempt to guess the proper URI
-//			uri = Request.detect_uri();
-//		}
+		if (uri === true)
+		{
+			// Attempt to guess the proper URI
+			uri = request.uri;
+		}
 
 		// Create the instance singleton
-		var request = new Request(uri);
+		var instance = new Request(uri);
 
-		Request.initial = request;
+		Request.initial = instance;
 
-		//console.log(req);
 		// Store global GET and POST data in the initial request only
-		request.query(require('querystring').parse(req.url));
-//		request.post(_POST);
+		var query = request.url.replace(/[^\?]*\?/, '');
+		query = require('querystring').parse(query);
+		instance.query(query);
 
 		if (protocol !== undefined)
 		{
 			// Set the request protocol
-			request.protocol(protocol);
+			instance.protocol(protocol);
 		}
 
 		if (method !== undefined)
 		{
 			// Set the request method
-			request.method(method);
+			instance.method(method);
 		}
 
 		if (referrer !== undefined)
 		{
 			// Set the referrer
-			request.referrer(referrer);
+			instance.referrer(referrer);
 		}
 
 		if (userAgent !== undefined)
 		{
 			// Set the referrer
-			request.userAgent(userAgent);
+			instance.userAgent(userAgent);
 		}
 
 		if (clientIp !== undefined)
 		{
 			// Set the referrer
-			request.clientIp(clientIp);
+			instance.clientIp(clientIp);
 		}
 
 		if (requestedWith !== undefined)
 		{
 			// Apply the requested with variable
-			request.requestedWith(requestedWith);
+			instance.requestedWith(requestedWith);
 		}
 	}
 	else
 	{
-		var request = new Request(uri);
+		var instance = new Request(uri);
 	}
 
-	return request;
+	return instance;
 };
 
 /**

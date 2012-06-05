@@ -43,8 +43,10 @@ Johana.conf.attach(new ConfigFile());
 
 Johana.onRequest = function(req, res) {
 
-	Request.factory(req.url, req);
-	Johana.log.add(Log.ERROR, 'vova');
+	var r = Request.factory(true, req);
+
+//	Johana.log.add(Log.ERROR, 'vova');
+	console.log(r);
 
 	res.writeHead(200, {'Content-Type': 'text/html'});
 	res.end(View.factory('hello').render());
